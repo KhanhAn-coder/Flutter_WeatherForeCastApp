@@ -18,10 +18,11 @@ class WeatherScreen extends StatefulWidget {
 
 class _WeatherScreenState extends State<WeatherScreen> {
   late Future<Map<String, dynamic>> weather;
+  String place = "Ho Chi Minh";
 
 
   Future <Map<String, dynamic>> getCurrentWeather() async {
-    String cityName = "Ho Chi Minh";
+    String cityName = place;
     try{
       final res = await http.get(
         Uri.parse('https://api.openweathermap.org/data/2.5/forecast?q=$cityName&APPID=$openWeatherAPIKey'),
@@ -38,6 +39,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
     }
 
 
+
+  }
+  void dropdownCallback(String? value) {
+    if(value is String){
+      setState(() {
+        place = value;
+        weather = getCurrentWeather();
+      });
+    }
   }
   @override
   void initState() {
@@ -61,7 +71,17 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 weather = getCurrentWeather();
               });
             },
-            icon: const Icon(Icons.refresh)
+            icon: const Icon(Icons.refresh),
+          ),
+          DropdownButton(
+              items: const [
+                DropdownMenuItem(value: "Ha Noi",child: Text("Ha Noi")),
+                DropdownMenuItem(value: "Ho Chi Minh", child: Text("Ho Chi Minh")),
+                DropdownMenuItem(value: "Vung Tau",child: Text("Vung Tau"))
+              ],
+              value: place,
+              onChanged: dropdownCallback,
+              iconSize: 40.0,
           )
         ],
 
@@ -79,7 +99,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           }
           final data = snapshot.data!;
           final currentWeatherData = data['list'][0];
-          final currentTemp = currentWeatherData['main']['temp'] - 272.15;
+          final currentTemp = currentWeatherData['main']['temp'] - 273.15;
           final currentSky = currentWeatherData['weather'][0]['main'];
           final currentPressure = currentWeatherData['main']['pressure'];
           final currentWindSpeed = currentWeatherData['wind']['speed'];
@@ -193,6 +213,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
       ),
     );
   }
+
+
 }
 
 
